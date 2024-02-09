@@ -70,19 +70,36 @@ class ExMain(QWidget):
 
 
         #load bagfile
-        test_bagfile = '/Users/kimgyeong-yeon/PycharmProjects/pythonProject/purdue/3D/2022-11-11-15-10-22.bag'
-        self.bag_file = rosbag.Bag(test_bagfile)
+        # test_bagfile = '/Users/kimgyeong-yeon/PycharmProjects/pythonProject/purdue/3D/2022-11-11-15-10-22.bag'
+        # self.bag_file = rosbag.Bag(test_bagfile)
+            
+        #Subscribe to lidar data, and send it into algorithms for processing
+        # Initialize ROS node
+        rospy.init_node('lidar_subscriber', anonymous=True)
+
+        # Subscribe to the lidar topic
+        rospy.Subscriber('/lidar_topic', PointCloud2, self.lidar_callback) #change /lidar_topic to whatever the topic is called
+
+        # Spin ROS node to process messages
+        rospy.spin()
+            
 
         #ros thread
-        self.bagthreadFlag = True
-        self.bagthread = Thread(target=self.getbagfile)
-        self.bagthread.start() # 기존 값 10
+        # self.bagthreadFlag = True
+        # self.bagthread = Thread(target=self.getbagfile)
+        # self.bagthread.start() # 기존 값 10
         #Graph Timer 시작
         self.mytimer = QTimer()
         self.mytimer.start(10)  # 1초마다 차트 갱신 위함...
         self.mytimer.timeout.connect(self.get_data)
 
         self.show()
+    def lidar_callback(self, msg):
+        # Convert ROS message to numpy array
+        points = ros_numpy.point_cloud2.pointcloud2_to_xyz_array(msg)
+        # Process the point cloud data
+        self.doYourAlgorithm(points)
+        
 
 
     @pyqtSlot()
@@ -105,33 +122,33 @@ class ExMain(QWidget):
         #print('test')
 
     #ros 파일에서 velodyne_points 메시지만 불러오는 부분
-    def getbagfile(self):
-        read_topic = '/velodyne_points' #메시지 타입
+    # def getbagfile(self):
+    #     read_topic = '/velodyne_points' #메시지 타입
 
-        for topic, msg, t in self.bag_file.read_messages(read_topic):
-            if self.bagthreadFlag is False:
-                break
-            #ros_numpy 데이터 타입 문제로 class를 강제로 변경
-            msg.__class__ = sensor_msgs.msg._PointCloud2.PointCloud2
+    #     for topic, msg, t in self.bag_file.read_messages(read_topic):
+    #         if self.bagthreadFlag is False:
+    #             break
+    #         #ros_numpy 데이터 타입 문제로 class를 강제로 변경
+    #         msg.__class__ = sensor_msgs.msg._PointCloud2.PointCloud2
 
-            #get point cloud
-            pc = ros_numpy.numpify(msg)
-            points = np.zeros((pc.shape[0], 3)) #point배열 초기화 1번 컬럼부터 x, y, z, intensity 저장 예정
+    #         #get point cloud
+    #         pc = ros_numpy.numpify(msg)
+    #         points = np.zeros((pc.shape[0], 3)) #point배열 초기화 1번 컬럼부터 x, y, z, intensity 저장 예정
 
-            # for ROS and vehicle, x axis is long direction, y axis is lat direction
-            # ros 데이터는 x축이 정북 방향, y축이 서쪽 방향임, 좌표계 오른손 법칙을 따름
-            points[:, 0] = pc['x']
-            points[:, 1] = pc['y']
-            points[:, 2] = pc['z']
-            # points[:, 3] = pc['intensity']
+    #         # for ROS and vehicle, x axis is long direction, y axis is lat direction
+    #         # ros 데이터는 x축이 정북 방향, y축이 서쪽 방향임, 좌표계 오른손 법칙을 따름
+    #         points[:, 0] = pc['x']
+    #         points[:, 1] = pc['y']
+    #         points[:, 2] = pc['z']
+    #         # points[:, 3] = pc['intensity']
 
-            start = time.time()
-            self.resetObjPos()
-            self.doYourAlgorithm(points)
-            print("time : ", time.time() - start)
+    #         start = time.time()
+    #         self.resetObjPos()
+    #         self.doYourAlgorithm(points)
+    #         print("time : ", time.time() - start)
 
-            #print(points)
-            time.sleep(0.1) #빨리 볼라면 주석처리 하면됨
+    #         #print(points)
+    #         time.sleep(0.1) #빨리 볼라면 주석처리 하면됨
 
     def downSampling(self, points):
         # <random downsampling>
@@ -180,6 +197,7 @@ class ExMain(QWidget):
         #     print(i, end='')
 
     #여기부터 object detection 알고리즘 적용해 보면 됨
+    #I did not change any of this section
     def doYourAlgorithm(self, points):
         # Filter_ROI
         roi = {"x":[-30, 30], "y":[-10, 20], "z":[-1.5, 5.0]} # z값 수정
