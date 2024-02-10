@@ -12,8 +12,6 @@ import time, random
 from threading import Thread
 import numpy as np
 
-from sklearn.cluster import KMeans
-from sklearn.neighbors import KDTree
 from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import RANSACRegressor
@@ -21,7 +19,7 @@ from sklearn.linear_model import RANSACRegressor
 class ExMain(QWidget):
     def __init__(self):
         super().__init__()
-        self.ALGO_FLAG = 2 # 1 : kdtree. 2 : dbscan
+        self.ALGO_FLAG = 1 # 1 : dbscan
         self.clusterLabel = list()
         self.frame = 1
         hbox = QGridLayout()
@@ -144,29 +142,13 @@ class ExMain(QWidget):
         # points = vox.filter()
         # print(points)
 
-        # open3d.visualization.draw_geometries([points])
-        # points.scale(1/points.get_max_bound()-points.get_min_bound())
-        # voxel_grid = open3d.geometry.VoxelGrid.create_from_point_cloud(points, voxel_size=0.1)
-        # open3d.visualization.draw_geometries([voxel_grid])
 
 
-            # print('cluster_point : ', random_point, ', ', ind)
-
-        # print('length : ', len(points), ', random point : ', random_point, ', random point list : ', points[random_point])
-        # dist, ind = kdt.query(points[:], k=10)
-        # print(points[:])
-
-        #print('tree', kdt.get_tree_stats())
-        # print('dist : ', dist, '\nind : ', ind)
-
-        # print('count : ', kdt.query_radius(points[:1], r=0.3, count_only=True))
-        # print(kdt.query_radius(points[:1], r=0.3))
 
     def dbscan(self, points): # dbscan eps = 1.5, min_size = 60
         # scaler = StandardScaler()
         # scaler.fit(points)
         # X_scaled = scaler.transform(points)
-        #
         # dbscan = DBSCAN().fit_predict(X_scaled)
         # print(dbscan)
         # self.clusterLabel = dbscan.labels_
@@ -196,8 +178,6 @@ class ExMain(QWidget):
 
         # Clustering
         if self.ALGO_FLAG == 1:
-            self.kdtree(points)
-        elif self.ALGO_FLAG == 2:
             self.dbscan(points)
 
         clusterCnt = max(self.clusterLabel)+1
@@ -223,9 +203,9 @@ class ExMain(QWidget):
 
 
             # car size bounding box
-            carLength = 4.7 # 경차 : 3.6 소형 : 4.7
-            carHeight = 2 # 경차 : 2 소형 : 2
-            if (abs(x_size) <= carLength+1) and (abs(y_size) <= carHeight+1): # 차량 길이 비교할 때 마이너스로 비교하면 X / 따라서 절대값으로 비교
+            objLength = 0.5
+            objHeight = 0.3
+            if (abs(x_size) <= objLength+1) and (abs(y_size) <= objHeight+1): # 차량 길이 비교할 때 마이너스로 비교하면 X / 따라서 절대값으로 비교
                 tempobjPos[0] = x
                 tempobjPos[1] = y
                 tempobjSize[0] = x_size
