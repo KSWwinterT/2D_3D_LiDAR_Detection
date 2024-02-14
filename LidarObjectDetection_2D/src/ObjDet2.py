@@ -97,7 +97,6 @@ class ExMain(QWidget):
                 obj.setVisible(False)
             else:
                 obj.setVisible(True)
-                # obj.setRect((objpos[0])-(objsize[0]/2), (objpos[1])-(objsize[1]/2), objsize[0], objsize[1])
                 obj.setRect(objpos[0], objpos[1], objsize[0], objsize[1])
         #time.sleep(1)
         #print('test')
@@ -133,14 +132,14 @@ class ExMain(QWidget):
 
     def downSampling(self, points):
         # <random downsampling>
-        idx = np.random.randint(len(points), size=10000)
-        points = points[idx, :]
+        # idx = np.random.randint(len(points), size=10000)
+        # points = points[idx, :]
 
         # <voxel grid downsampling>
-        # vox = points.make_voxel_grid_filter()
-        # vox.set_leaf_size(0.01, 0.01, 0.01)
-        # points = vox.filter()
-        # print(points)
+        vox = points.make_voxel_grid_filter()
+        vox.set_leaf_size(0.01, 0.01, 0.01)
+        points = vox.filter()
+        print(points)
 
 
 
@@ -202,7 +201,7 @@ class ExMain(QWidget):
                 y_size = -(np.max(points[index, 1]) - np.min(points[index, 1]))  # y_max 1.3
 
 
-            # car size bounding box
+            # bounding box size config
             objLength = 0.5
             objHeight = 0.3
             if (abs(x_size) <= objLength+1) and (abs(y_size) <= objHeight+1): # 차량 길이 비교할 때 마이너스로 비교하면 X / 따라서 절대값으로 비교

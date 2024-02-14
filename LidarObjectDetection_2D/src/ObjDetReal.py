@@ -1,19 +1,12 @@
-import geomdl as geomdl
-import open3d as open3d
 import pyqtgraph as pg
 import ros_numpy
 import sensor_msgs
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, QObject, Qt, QThread, QTimer
-import rosbag
 import rospy
-import time, random
-from threading import Thread
 import numpy as np
 
-from sklearn.cluster import KMeans
-from sklearn.neighbors import KDTree
 from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import RANSACRegressor
@@ -68,10 +61,6 @@ class ExMain(QWidget):
             size = [0, 0, 0]  # w, h, depth
             self.objsPos.append(pos)
             self.objsSize.append(size)
-
-        # load bagfile
-        # test_bagfile = '/Users/kimgyeong-yeon/PycharmProjects/pythonProject/purdue/3D/2022-11-11-15-10-22.bag'
-        # self.bag_file = rosbag.Bag(test_bagfile)
 
         # Subscribe to lidar data, and send it into algorithms for processing
         # Initialize ROS node
