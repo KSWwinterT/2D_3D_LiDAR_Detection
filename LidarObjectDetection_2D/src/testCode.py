@@ -31,8 +31,6 @@ class LidarNode(Node):
         grid = pg.GridItem()
         self.view.addItem(grid)
 
-        self.setWindowTitle("realtime")
-
         self.spt = pg.ScatterPlotItem(pen=pg.mkPen(width=1, color='r'), symbol='o', size=2)
         self.view.addItem(self.spt)
 
@@ -152,7 +150,10 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.lidar_node = lidar_node
-        self.setCentralWidget(self.lidar_node)
+        central_widget = QWidget()
+        central_widget.setLayout(QVBoxLayout())
+        central_widget.layout().addWidget(self.lidar_node)
+        self.setCentralWidget(central_widget)
 
 if __name__ == '__main__':
     rclpy.init()
