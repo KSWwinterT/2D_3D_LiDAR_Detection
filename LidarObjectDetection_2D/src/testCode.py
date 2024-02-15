@@ -1,27 +1,27 @@
 import rclpy
 from rclpy.node import Node
-import rclpy
-from rclpy.node import Node
+from sensor_msgs.msg import PointCloud2
 from rclpy.qos import QoSProfile
-from rclpy.serialization import deserialize_message
-from rclpy.time import Time
+import numpy as np
 import matplotlib.pyplot as plt
-
-from sensor_msgs.msg import PointCloud2  # Import the appropriate message type
 
 class BagReaderNode(Node):
     def __init__(self):
         super().__init__('bag_reader_node')
         self.subscription = self.create_subscription(
-            PointCloud2,  # Replace with the actual message type you want to visualize
-            '/rosout',  # Replace with the actual topic name you want to visualize
+            PointCloud2,
+            '/rosout',
             self.message_callback,
-            qos_profile=rclpy.qos.qos_profile_sensor_data
+            qos_profile=QoSProfile(depth=10)
         )
 
     def message_callback(self, msg):
         # Process and visualize the point cloud data here
-        self.get_logger().info("Received Point Cloud Data")
+        data = np.frombuffer(msg.data, dtype=np.float32).reshape((msg.height, msg.width, -1))
+
+        # Assuming the data is 2D, you may need to adjust based on the actual structure of your point cloud
+        plt.imshow(data[:, :, 0], cmap='gray')
+        plt.show()
 
 def main():
     rclpy.init()
@@ -30,13 +30,10 @@ def main():
     # Replace 'your_bag_file.db3' with the actual bag file name
     bag_file = 'your_bag_file.db3'
 
-    with rclpy.create_node('bag_reader'):
-        bag = rclpy.serialization.deserialize_message(
-            rclpy.serialization.MessageType.STRING, bag_file
-        )
-
     try:
         rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
     finally:
         node.destroy_node()
         rclpy.shutdown()
