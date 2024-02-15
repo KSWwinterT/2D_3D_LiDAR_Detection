@@ -1,25 +1,27 @@
 import rclpy
 from rclpy.node import Node
+import rclpy
+from rclpy.node import Node
 from rclpy.qos import QoSProfile
 from rclpy.serialization import deserialize_message
 from rclpy.time import Time
 import matplotlib.pyplot as plt
 
-from std_msgs.msg import String  # Replace with the actual message type you recorded
+from sensor_msgs.msg import PointCloud2  # Import the appropriate message type
 
 class BagReaderNode(Node):
     def __init__(self):
         super().__init__('bag_reader_node')
         self.subscription = self.create_subscription(
-            String,  # Replace with the actual message type you recorded
-            'your_topic_name',  # Replace with the actual topic name you recorded
+            PointCloud2,  # Replace with the actual message type you want to visualize
+            '/rosout',  # Replace with the actual topic name you want to visualize
             self.message_callback,
-            qos_profile=QoSProfile(depth=10)
+            qos_profile=rclpy.qos.qos_profile_sensor_data
         )
 
     def message_callback(self, msg):
-        # Process and visualize the data here
-        self.get_logger().info(f"Received: {msg.data}")
+        # Process and visualize the point cloud data here
+        self.get_logger().info("Received Point Cloud Data")
 
 def main():
     rclpy.init()
