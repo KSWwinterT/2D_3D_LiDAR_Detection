@@ -141,6 +141,10 @@ class ExMain(QWidget):
         points = vox.filter()
         print(points)
 
+        open3d.visualization.draw_geometries([points])
+        points.scale(1/points.get_max_bound()-points.get_min_bound())
+        voxel_grid = open3d.geometry.VoxelGrid.create_from_point_cloud(points, voxel_size=0.1)
+        open3d.visualization.draw_geometries([voxel_grid])
 
 
 
@@ -202,8 +206,8 @@ class ExMain(QWidget):
 
 
             # bounding box size config
-            objLength = 0.5
-            objHeight = 0.3
+            objLength = 1.8
+            objHeight = 1.5
             if (abs(x_size) <= objLength+1) and (abs(y_size) <= objHeight+1): # 차량 길이 비교할 때 마이너스로 비교하면 X / 따라서 절대값으로 비교
                 tempobjPos[0] = x
                 tempobjPos[1] = y
