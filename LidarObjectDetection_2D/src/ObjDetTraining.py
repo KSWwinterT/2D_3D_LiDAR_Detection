@@ -82,7 +82,7 @@ class ExMain(QWidget):
         #생성된 object의 position값을 입력하여 그래프에 출력할 수 있도록 함
         numofobjs = 50
         for i in range(numofobjs):
-            obj = pg.QtWidgets.QGraphicsRectItem(-0.5, -0.5, 0.5, 0.5) #obj 크기는 1m로 고정시킴
+            obj = pg.QtGui.QGraphicsRectItem(-0.5, -0.5, 0.5, 0.5) #obj 크기는 1m로 고정시킴
             obj.setPen(pg.mkPen('w'))
             self.view2D.addItem(obj)
             self.objs.append(obj)
